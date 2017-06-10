@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------------
 -- Title: Mik's Scrolling Battle Text Options
 -- Author: Mik
+-- Maintainer: Athene
 -------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------
@@ -34,7 +35,7 @@ local MAX_ANIMATION_STEP = 5;
 
 -- The min and max scroll heights.
 local MIN_SCROLL_HEIGHT = 100;
-local MAX_SCROLL_HEIGHT = 300;
+local MAX_SCROLL_HEIGHT = 600;
 
 -- The size of an event settings line and number of event items per page.
 local EVENT_ITEM_HEIGHT = 25;
@@ -371,6 +372,11 @@ function MikSBTOpt.InitDropdowns()
  key = "TriggerTypeDropdown";
  MikSBTOpt.SetupDropdown(TRIGGER_CONFIGURATION_FRAME_NAME .. key, MikSBTOpt.DROPDOWNS[key].Label, MikSBTOpt.DROPDOWNS[key].Tooltip, MikSBTOpt.TriggerTypeDropdownOnClick, MikSBT.AVAILABLE_TRIGGER_TYPES, nil); 
  UIDropDownMenu_SetWidth(150, getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. key));
+ 
+ -- Initialize the stances dropdown.
+ key = "StanceDropdown";
+ MikSBTOpt.SetupDropdown(TRIGGER_CONFIGURATION_FRAME_NAME .. key, MikSBTOpt.DROPDOWNS[key].Label, MikSBTOpt.DROPDOWNS[key].Tooltip, MikSBTOpt.StanceDropdownOnClick, MikSBT.AVAILABLE_STANCES, nil); 
+ UIDropDownMenu_SetWidth(240, getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. key));
 end
 
 
@@ -553,6 +559,15 @@ end
 
 
 -- **********************************************************************************
+-- Called when the stance dropdown menu is clicked.
+-- **********************************************************************************
+function MikSBTOpt.StanceDropdownOnClick(frameName)
+ -- Set the selected dropdown option to the appropriate value.
+ UIDropDownMenu_SetSelectedValue(getglobal(frameName), this.value);
+end
+
+
+-- **********************************************************************************
 -- This function refreshes the options for the profiles dropdown.
 -- **********************************************************************************
 function MikSBTOpt.RefreshProfilesDropdown()
@@ -597,6 +612,17 @@ function MikSBTOpt.InitCheckboxes()
  key = "Tab1FrameShowGameDamageCheckbox";
  MikSBTOpt.SetupCheckbox(OPTIONS_FRAME_NAME .. key, MikSBTOpt.CHECKBOXES[key].Label, MikSBTOpt.CHECKBOXES[key].Tooltip, "ShowGameDamage");
 
+ -- Initialize the Show All Mana Gains checkbox.
+ key = "Tab1FrameShowAllManaGainsCheckbox";
+ MikSBTOpt.SetupCheckbox(OPTIONS_FRAME_NAME .. key, MikSBTOpt.CHECKBOXES[key].Label, MikSBTOpt.CHECKBOXES[key].Tooltip, "ShowAllManaGains");
+ 
+  -- Initialize the Low Health Sound checkbox.
+ key = "Tab1FrameLowHealthSoundCheckbox";
+ MikSBTOpt.SetupCheckbox(OPTIONS_FRAME_NAME .. key, MikSBTOpt.CHECKBOXES[key].Label, MikSBTOpt.CHECKBOXES[key].Tooltip, "LowHealthSound");
+ 
+  -- Initialize the Low Mana Sound checkbox.
+ key = "Tab1FrameLowManaSoundCheckbox";
+ MikSBTOpt.SetupCheckbox(OPTIONS_FRAME_NAME .. key, MikSBTOpt.CHECKBOXES[key].Label, MikSBTOpt.CHECKBOXES[key].Tooltip, "LowManaSound");
 
  -- Initialize the show scroll area events checkboxes.
  key = "Tab2FrameShowEventsCheckbox";	MikSBTOpt.SetupCheckbox(OPTIONS_FRAME_NAME .. key, MikSBTOpt.CHECKBOXES[key].Label, MikSBTOpt.CHECKBOXES[key].Tooltip, "DisplaySettings.Incoming.Show");
@@ -821,7 +847,7 @@ end
 function MikSBTOpt.InitSliders()
  -- Initialize the Animation Step slider.
  local key = "Tab1FrameAnimationStepSlider"; 
- MikSBTOpt.SetupSlider(OPTIONS_FRAME_NAME .. key, MikSBTOpt.SLIDERS[key].Label, MikSBTOpt.SLIDERS[key].Tooltip, MIN_ANIMATION_STEP, MAX_ANIMATION_STEP, 1, "AnimationStep");
+ MikSBTOpt.SetupSlider(OPTIONS_FRAME_NAME .. key, MikSBTOpt.SLIDERS[key].Label, MikSBTOpt.SLIDERS[key].Tooltip, MIN_ANIMATION_STEP, MAX_ANIMATION_STEP, 0.5, "AnimationStep");
 
  -- Initialize the scroll height slider.
  key = "ScrollHeightSlider";
@@ -943,6 +969,7 @@ end
 function MikSBTOpt.InitButtons()
  -- Initialize the edit font settings buttons for master, incoming, outgoing, and notification.
  local key = "Tab1FrameEditFontSettingsButton";	MikSBTOpt.SetupButton(OPTIONS_FRAME_NAME .. key, MikSBTOpt.BUTTONS[key].Label, MikSBTOpt.BUTTONS[key].Tooltip);
+ key = "Tab1FrameEditBlizzardFontSettingsButton";	MikSBTOpt.SetupButton(OPTIONS_FRAME_NAME .. key, MikSBTOpt.BUTTONS[key].Label, MikSBTOpt.BUTTONS[key].Tooltip);
  key = "Tab2FrameEditFontSettingsButton";		MikSBTOpt.SetupButton(OPTIONS_FRAME_NAME .. key, MikSBTOpt.BUTTONS[key].Label, MikSBTOpt.BUTTONS[key].Tooltip);
  key = "Tab3FrameEditFontSettingsButton";		MikSBTOpt.SetupButton(OPTIONS_FRAME_NAME .. key, MikSBTOpt.BUTTONS[key].Label, MikSBTOpt.BUTTONS[key].Tooltip);
  key = "Tab4FrameEditFontSettingsButton";		MikSBTOpt.SetupButton(OPTIONS_FRAME_NAME .. key, MikSBTOpt.BUTTONS[key].Label, MikSBTOpt.BUTTONS[key].Tooltip);
@@ -1010,6 +1037,14 @@ function MikSBTOpt.ButtonOnClick()
   getglobal(FONT_SETTINGS_FRAME_NAME .. "Title"):SetText(MikSBTOpt.FONT_SETTINGS_TOOLTIPS["Master"].FontSettingsTitle);
   MikSBTOpt.ShowMasterFontSettings();
   
+ -- Edit Blizzard scrolling text font.
+ elseif (this:GetName() == OPTIONS_FRAME_NAME .. "Tab1FrameEditBlizzardFontSettingsButton") then
+  local fontSettingsFrame = getglobal(FONT_SETTINGS_FRAME_NAME);
+  fontSettingsFrame:SetPoint("TOPLEFT", this, "BOTTOMLEFT");
+  fontSettingsFrame:Raise();
+  getglobal(FONT_SETTINGS_FRAME_NAME .. "Title"):SetText(MikSBTOpt.FONT_SETTINGS_TOOLTIPS["Blizzard"].FontSettingsTitle);
+  MikSBTOpt.ShowBlizzardFontSettings();
+ 
  -- Edit incoming font settings button.
  elseif (this:GetName() == OPTIONS_FRAME_NAME .. "Tab2FrameEditFontSettingsButton") then
   -- Hide the event message editbox if it's shown.
@@ -1332,6 +1367,8 @@ function MikSBTOpt.InitEditboxes()
  key = "XOffsetEditbox";	MikSBTOpt.SetupEditbox(SCROLL_AREA_MOVER_CONTROL_FRAME_NAME .. key, MikSBTOpt.EDITBOXES[key].Label, MikSBTOpt.EDITBOXES[key].Tooltip, nil);
  key = "YOffsetEditbox";	MikSBTOpt.SetupEditbox(SCROLL_AREA_MOVER_CONTROL_FRAME_NAME .. key, MikSBTOpt.EDITBOXES[key].Label, MikSBTOpt.EDITBOXES[key].Tooltip, nil);
 
+ key = "IconNameEditbox";	MikSBTOpt.SetupEditbox(TRIGGER_CONFIGURATION_FRAME_NAME .. key, MikSBTOpt.EDITBOXES[key].Label, MikSBTOpt.EDITBOXES[key].Tooltip, nil);
+ 
  key = "SearchPattern1Editbox";	MikSBTOpt.SetupEditbox(TRIGGER_CONFIGURATION_FRAME_NAME .. key, MikSBTOpt.EDITBOXES[key].Label, MikSBTOpt.EDITBOXES[key].Tooltip, nil);
  key = "SearchPattern2Editbox";	MikSBTOpt.SetupEditbox(TRIGGER_CONFIGURATION_FRAME_NAME .. key, MikSBTOpt.EDITBOXES[key].Label, MikSBTOpt.EDITBOXES[key].Tooltip, nil);
 end
@@ -1609,6 +1646,24 @@ function MikSBTOpt.InitEvents()
  index = 18;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_HEAL";
  index = 19;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_HOT";
  index = 20;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_ENVIRONMENTAL";
+ index = 21;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_DAMAGE";
+ index = 22;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_MISS";
+ index = 23;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_DODGE";
+ index = 24;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_PARRY";
+ index = 25;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_BLOCK";
+ index = 26;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_ABSORB";
+ index = 27;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_IMMUNE";
+ index = 28;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_DAMAGE";
+ index = 29;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_DOT";
+ index = 30;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_MISS";
+ index = 31;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_DODGE";
+ index = 32;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_PARRY";
+ index = 33;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_BLOCK";
+ index = 34;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_RESIST";
+ index = 35;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_ABSORB";
+ index = 36;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_SPELL_IMMUNE";
+ index = 37;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_HEAL";
+ index = 38;	evtData[index].EventType = "MSBT_EVENTTYPE_INCOMING_PET_HOT";
 
 
  evtData = MikSBTOpt.OUTGOING_EVENTS;
@@ -2321,6 +2376,41 @@ end
 
 
 -- **********************************************************************************
+-- Show blizzard font settings.
+-- **********************************************************************************
+function MikSBTOpt.ShowBlizzardFontSettings()
+ -- Hide the crit font settings controls.
+ MikSBTOpt.HideCritFontControls()
+ 
+ local fontSettingsFrame = getglobal(FONT_SETTINGS_FRAME_NAME);
+ fontSettingsFrame.InheritedOutlineIndex = MikSBT.GetOptionFromVarPath("MasterFontSettings.Normal.OutlineIndex");
+ fontSettingsFrame.InheritedFontSize = MikSBT.GetOptionFromVarPath("MasterFontSettings.Normal.FontSize");
+ 
+ -- Setup the normal font dropdown.
+ local key = "FontDropdown";
+ MikSBTOpt.SetupDropdown(FONT_SETTINGS_FRAME_NAME .. key, MikSBTOpt.DROPDOWNS[key].Label, MikSBTOpt.FONT_SETTINGS_TOOLTIPS["Blizzard"].Font, MikSBTOpt.FontSettingsDropdownOnClick, MikSBT.AVAILABLE_FONTS, "BlizzardFontSettings.Normal.FontIndex");
+ MikSBTOpt.PopulateDropdown(FONT_SETTINGS_FRAME_NAME .. key);
+
+ -- Hide the inherit font size and crit font size checkboxes.
+ getglobal(FONT_SETTINGS_FRAME_NAME .. "InheritFontSizeCheckbox"):Hide();
+ 
+ -- Hide the dropdown button.
+ getglobal(FONT_SETTINGS_FRAME_NAME .. "FontOutlineDropdown"):Hide();
+ 
+ -- Show the font size and crit size sliders.
+ getglobal(FONT_SETTINGS_FRAME_NAME .. "FontSizeSlider"):Hide();
+
+
+ -- Show the font settings frame.
+ getglobal(FONT_SETTINGS_FRAME_NAME):Show();
+
+ -- Update the font previews.
+ MikSBTOpt.UpdateFontPreviews();
+ MikSBT.Print("Restart the game or disconnect to apply Game Damage font.", 1, 0, 0)
+end
+
+
+-- **********************************************************************************
 -- Show scroll area font settings .
 -- **********************************************************************************
 function MikSBTOpt.ShowScrollAreaFontSettings(scrollArea)
@@ -2672,13 +2762,13 @@ function MikSBTOpt.UpdateFontPreviews()
 
  -- Get the selected normal font index.
  local fontIndex = UIDropDownMenu_GetSelectedValue(getglobal(FONT_SETTINGS_FRAME_NAME .. "FontDropdown"));
- if (fontIndex == 0) then
+ if (fontIndex == 0 or fontIndex == nil) then
   fontIndex = fontSettingsFrame.InheritedFontIndex;
  end
 
  -- Get the selected normal outline index.
  local outlineIndex = UIDropDownMenu_GetSelectedValue(getglobal(FONT_SETTINGS_FRAME_NAME .. "FontOutlineDropdown"));
- if (outlineIndex == 0) then
+ if (outlineIndex == 0 or outlineIndex == nil) then
   outlineIndex = fontSettingsFrame.InheritedOutlineIndex;
  end
 
@@ -3107,7 +3197,7 @@ function MikSBTOpt.SetupAvailableTriggerEvents()
  table.insert(availableTriggerEvents, "CHAT_MSG_COMBAT_CREATURE_VS_SELF_MISSES");
  table.insert(availableTriggerEvents, "CHAT_MSG_COMBAT_HOSTILEPLAYER_MISSES");
  table.insert(availableTriggerEvents, "CHAT_MSG_COMBAT_PARTY_MISSES");
- table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE");
+ table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_CREATURE_VS_SELF_DAMAGE");  -- athenne add
  table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_HOSTILEPLAYER_DAMAGE");
  table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_PARTY_DAMAGE");
  table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_DAMAGESHIELDS_ON_OTHERS");
@@ -3134,6 +3224,7 @@ function MikSBTOpt.SetupAvailableTriggerEvents()
  table.insert(availableTriggerEvents, "CHAT_MSG_SKILL");
  table.insert(availableTriggerEvents, "CHAT_MSG_COMBAT_XP_GAIN");
  table.insert(availableTriggerEvents, "CHAT_MSG_COMBAT_HOSTILE_DEATH");
+ table.insert(availableTriggerEvents, "CHAT_MSG_SPELL_CREATURE_VS_CREATURE_DAMAGE");
 end
 
 
@@ -3235,6 +3326,15 @@ function MikSBTOpt.ShowTriggerConfig(triggerKey)
   -- Populate the trigger type.
   MikSBTOpt.PopulateDropdown(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerTypeDropdown", triggerData.TriggerSettings.TriggerType);
 
+   -- Holds the Icon Texture.
+   local texture = ""; 
+
+   -- Check if there is a texture defined.
+   if (triggerData.Texture) then
+    texture = triggerData.Texture or "";
+   end
+  
+  MikSBTOpt.PopulateEditbox(TRIGGER_CONFIGURATION_FRAME_NAME .. "IconNameEditbox", texture);
   -- Setup the trigger controls appropriately depending on the trigger type.
   MikSBTOpt.SetupVariableTriggerControls(triggerKey, triggerData.TriggerSettings.TriggerType == MikCEH.TRIGGERTYPE_SEARCH_PATTERN);
 
@@ -3258,7 +3358,7 @@ function MikSBTOpt.SetupVariableTriggerControls(triggerKey, showSearch)
   -- Check if the search pattern controls should be shown.
   if (showSearch) then
    -- Resize the trigger frame.
-   triggerFrame:SetHeight(420);
+   triggerFrame:SetHeight(450);
 
    -- Hide the threshold slider.
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "ThresholdSlider"):Hide();
@@ -3270,8 +3370,11 @@ function MikSBTOpt.SetupVariableTriggerControls(triggerKey, showSearch)
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerEvent3Checkbox"):Show();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerEvent4Checkbox"):Show();
 
+   getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "StanceDropdown"):Show();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "SearchPattern1Editbox"):Show();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "SearchPattern2Editbox"):Show();
+   
+   getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TextureHorizontalBarBottom"):Show();
 
    -- Clear the selected trigger events.
    if (not triggerFrame.SelectedTriggerEvents) then
@@ -3288,7 +3391,12 @@ function MikSBTOpt.SetupVariableTriggerControls(triggerKey, showSearch)
    -- Populate the appropriate trigger events.
    MikSBTOpt.PopulateAvailableTriggerEvents();
 
-
+   
+   local stance = triggerData.TriggerSettings.Stance
+   if not stance then stance = 7 end
+   -- Populate the stance dropdown.
+  MikSBTOpt.PopulateDropdown(TRIGGER_CONFIGURATION_FRAME_NAME .. "StanceDropdown", stance);
+   
    -- Holds the search patterns.
    local searchPattern1 = ""; 
    local searchPattern2 = "";
@@ -3316,8 +3424,11 @@ function MikSBTOpt.SetupVariableTriggerControls(triggerKey, showSearch)
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerEvent2Checkbox"):Hide();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerEvent3Checkbox"):Hide();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerEvent4Checkbox"):Hide();
+   getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "StanceDropdown"):Hide();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "SearchPattern1Editbox"):Hide();
    getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "SearchPattern2Editbox"):Hide();
+   
+   getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TextureHorizontalBarBottom"):Hide();
 
    -- Populate the threshold slider.
    MikSBTOpt.PopulateSlider(TRIGGER_CONFIGURATION_FRAME_NAME .. "ThresholdSlider", triggerData.TriggerSettings.Threshold or 1);
@@ -3396,7 +3507,12 @@ function MikSBTOpt.SaveTriggerConfig()
   -- Save the trigger type.
   triggerData.TriggerSettings.TriggerType = UIDropDownMenu_GetSelectedValue(getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "TriggerTypeDropdown"));
 
-
+  -- Save the Icon Name
+  local texture = getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "IconNameEditbox"):GetText();
+   if (texture) and (texture ~= "") then
+    triggerData.Texture = texture;
+   end
+  
   -- Check if the trigger type is search pattern.
   if (triggerData.TriggerSettings.TriggerType == MikCEH.TRIGGERTYPE_SEARCH_PATTERN) then
    -- Clear the threshold field.
@@ -3410,6 +3526,17 @@ function MikSBTOpt.SaveTriggerConfig()
    -- Save the selected trigger events. 
    triggerData.TriggerSettings.TriggerEvents = trigEvents;
 
+   -- Save the required stance.
+  if UIDropDownMenu_GetSelectedValue(getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "StanceDropdown")) ~= 7 then
+	triggerData.TriggerSettings.Stance = UIDropDownMenu_GetSelectedValue(getglobal(TRIGGER_CONFIGURATION_FRAME_NAME .. "StanceDropdown"));
+	if not GetShapeshiftFormInfo(triggerData.TriggerSettings.Stance) then
+		MikSBT.Print("No stance found for the selected requirement on this character, this trigger might never occur :o", 1, 1, 0);
+		MikSBT.Print("Also it's dangerous to go alone! take this. o-[====>", 1, 1, 0); --remind me that this is a beta release
+	end
+  else
+	triggerData.TriggerSettings.Stance = nil
+  end
+   
    -- Create a table to hold the search patterns.
    local searchPatterns = {};
 
@@ -3540,6 +3667,14 @@ function MikSBTOpt.PopulateProfileOptions()
  MikSBTOpt.PopulateCheckbox(OPTIONS_FRAME_NAME .. "Tab1FrameShowGameDamageCheckbox");
  MikSBT.SetOptionShowGameDamage(MikSBT.CurrentProfile.ShowGameDamage);
 
+  -- Populate the Show All Mana Gains checkbox.
+ MikSBTOpt.PopulateCheckbox(OPTIONS_FRAME_NAME .. "Tab1FrameShowAllManaGainsCheckbox");
+ 
+  -- Populate the Low Health Sound checkbox.
+ MikSBTOpt.PopulateCheckbox(OPTIONS_FRAME_NAME .. "Tab1FrameLowHealthSoundCheckbox");
+ 
+  -- Populate the Low Mana Sound checkbox.
+ MikSBTOpt.PopulateCheckbox(OPTIONS_FRAME_NAME .. "Tab1FrameLowManaSoundCheckbox");
 
  -- Populate the scroll area show events checkboxes to the values in the profile.
  MikSBTOpt.PopulateCheckbox(OPTIONS_FRAME_NAME .. "Tab2FrameShowEventsCheckbox");
