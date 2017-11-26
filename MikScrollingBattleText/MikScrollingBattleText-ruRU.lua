@@ -2,8 +2,8 @@ local L = AceLibrary("AceLocale-2.2"):new("MikScrollingBattleText")
 
 L:RegisterTranslations("ruRU", function()
     return {
-		["Debug mode has been enabled."] = "Debug mode включен.",
-		["Debug mode has been disabled."] = "Debug mode выключен.",
+		["Debug mode has been enabled."] = "Режим отладки включен.",
+		["Debug mode has been disabled."] = "Режим отладки выключен.",
 		["Event search mode has been enabled.  Searching for: "] = "Поиск событий включен. Поиск: ",
 		["Event search mode has been disabled."] = "Поиск событий выключен.",
 		["The mod is now disabled."] = "Мод выключен",
@@ -24,7 +24,7 @@ L:RegisterTranslations("ruRU", function()
 		["Windfury!"]="Неистовство ветра!",
 		["Low Mana! (%1)"]="Мало маны! (%1)",
 		["Low Pet Health! (%1)"]="Мало здоровья питомца! (%1)",
-		["%a CP Finish It!"]="%a СП Используй!",
+		["%a CP Finish It!"]="%a СП, используй!",
 		["+Combat"]="+Бой",
 		["-Combat"]="-Бой",
 		["%a CP"]="%a СП",
